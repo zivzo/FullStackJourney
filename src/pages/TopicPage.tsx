@@ -1,4 +1,5 @@
 import { Breadcrumbs } from '../components/Breadcrumbs'
+import { ExerciseList } from '../components/ExerciseList'
 import { href } from '../hooks/useHashRoute'
 import type { Topic, Track } from '../data/skills'
 
@@ -49,6 +50,10 @@ export function TopicPage({ track, topic }: TopicPageProps) {
           ))}
         </ul>
       </section>
+
+      {topic.exercises && topic.exercises.length > 0 && (
+        <ExerciseList key={topic.id} topicId={topic.id} exercises={topic.exercises} />
+      )}
 
       <nav className="pager" aria-label="Topic navigation">
         {previous ? (

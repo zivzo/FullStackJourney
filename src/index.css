@@ -8,7 +8,11 @@
   --accent-bg: rgba(79, 70, 229, 0.08);
   --shadow: rgba(0, 0, 0, 0.08) 0 8px 20px -6px;
 
+  --code-bg: #f3f4f6;
+  --code-text: #1f2937;
+
   --sans: system-ui, 'Segoe UI', Roboto, sans-serif;
+  --mono: ui-monospace, 'Cascadia Code', Menlo, Consolas, monospace;
 
   font: 16px/1.5 var(--sans);
   color-scheme: light dark;
@@ -27,6 +31,8 @@
     --accent: #a5b4fc;
     --accent-bg: rgba(165, 180, 252, 0.12);
     --shadow: rgba(0, 0, 0, 0.4) 0 8px 20px -6px;
+    --code-bg: #0d0e13;
+    --code-text: #e5e7eb;
   }
 }
 
@@ -302,12 +308,331 @@ ol {
   border-radius: 12px;
 }
 
+/* Exercises */
+.panel-intro {
+  margin-bottom: 16px;
+}
+
+.exercise-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.exercise {
+  padding: 16px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+}
+
+.exercise-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.exercise h3 {
+  margin: 0;
+  font-size: 17px;
+  color: var(--text-h);
+}
+
+.exercise-steps {
+  list-style: decimal;
+  padding-left: 22px;
+  margin-bottom: 12px;
+}
+
+.exercise-steps li {
+  padding: 2px 0;
+}
+
+code {
+  padding: 1px 5px;
+  border-radius: 4px;
+  font-family: var(--mono);
+  font-size: 0.9em;
+  background: var(--accent-bg);
+  color: var(--text-h);
+}
+
+.hints {
+  margin-bottom: 12px;
+}
+
+.hints summary {
+  cursor: pointer;
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.hints ul {
+  list-style: disc;
+  padding: 6px 0 0 22px;
+}
+
+.badge-done {
+  background: rgba(16, 185, 129, 0.15);
+  color: #059669;
+  text-transform: none;
+}
+
+.button {
+  padding: 6px 14px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--text-h);
+  font: inherit;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.button:hover {
+  border-color: var(--accent);
+}
+
+.button:disabled {
+  cursor: progress;
+  opacity: 0.7;
+}
+
+.button-primary {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: var(--surface);
+  font-weight: 600;
+}
+
+.button:focus-visible,
+.file-tabs button:focus-visible,
+.code-editor:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* Playground */
+.playground {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.playground-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.file-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.file-tabs button {
+  padding: 6px 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px 8px 0 0;
+  background: transparent;
+  color: var(--text);
+  font-family: var(--mono);
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.file-tabs button[aria-selected='true'] {
+  border-color: var(--accent);
+  background: var(--accent-bg);
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.playground-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.playground-body {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.editor-pane,
+.preview-pane {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.code-editor {
+  width: 100%;
+  min-height: 340px;
+  flex: 1;
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--code-bg);
+  color: var(--code-text);
+  font-family: var(--mono);
+  font-size: 13px;
+  line-height: 1.55;
+  tab-size: 2;
+  resize: vertical;
+}
+
+.pane-label {
+  display: flex;
+  justify-content: space-between;
+  font-weight: 600;
+  color: var(--text-h);
+}
+
+.pane-note {
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--text);
+}
+
+.preview-frame {
+  width: 100%;
+  min-height: 340px;
+  flex: 1;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: #fff;
+}
+
+/* Runs code (and checks) without being visible. Not display: none, so layout and styles still compute. */
+.hidden-frame {
+  position: absolute;
+  left: -10000px;
+  top: 0;
+  width: 800px;
+  height: 600px;
+  visibility: hidden;
+}
+
+.playground h4 {
+  margin: 0 0 6px;
+  font-size: 14px;
+  color: var(--text-h);
+}
+
+.console,
+.problems {
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--code-bg);
+  font-family: var(--mono);
+  font-size: 13px;
+}
+
+.preview-pane .console {
+  flex: 1;
+  min-height: 340px;
+}
+
+.console ul,
+.problems ul {
+  max-height: 220px;
+  overflow: auto;
+}
+
+.preview-pane .console ul {
+  max-height: 420px;
+}
+
+.console li {
+  padding: 2px 0;
+  border-bottom: 1px solid var(--border);
+  color: var(--code-text);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.console .console-warn {
+  color: #d97706;
+}
+
+.console .console-error,
+.problems li {
+  color: #dc2626;
+}
+
+.problems li {
+  padding: 2px 0;
+  white-space: pre-wrap;
+}
+
+.checks {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.check-list li {
+  display: flex;
+  gap: 10px;
+  padding: 3px 0;
+}
+
+.check-icon {
+  flex-shrink: 0;
+  width: 1em;
+  font-weight: 700;
+  text-align: center;
+}
+
+.check-pass .check-icon {
+  color: #059669;
+}
+
+.check-fail .check-icon {
+  color: #dc2626;
+}
+
+.check-error {
+  display: block;
+  font-size: 13px;
+  color: #dc2626;
+}
+
+.check-summary {
+  font-weight: 600;
+  color: var(--text-h);
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
 /* Footer */
 .footer {
   padding: 20px;
   text-align: center;
   font-size: 14px;
   border-top: 1px solid var(--border);
+}
+
+@media (max-width: 760px) {
+  .playground-body {
+    grid-template-columns: minmax(0, 1fr);
+  }
 }
 
 @media (max-width: 600px) {
