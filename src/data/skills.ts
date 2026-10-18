@@ -1,3 +1,15 @@
+import type { Exercise } from '../playground/types'
+import { accessibilityExercises } from './exercises/accessibility'
+import { cssExercises } from './exercises/css'
+import { htmlExercises } from './exercises/html'
+import { javascriptExercises } from './exercises/javascript'
+import { performanceExercises } from './exercises/performance'
+import { reactExercises } from './exercises/react'
+import { stateManagementExercises } from './exercises/state-management'
+import { testingExercises } from './exercises/testing'
+import { toolingExercises } from './exercises/tooling'
+import { typescriptExercises } from './exercises/typescript'
+
 export type Level = 'beginner' | 'intermediate' | 'advanced'
 
 export interface Resource {
@@ -12,6 +24,8 @@ export interface Topic {
   level: Level
   concepts: string[]
   resources: Resource[]
+  /** Hands-on coding exercises with a live preview. */
+  exercises?: Exercise[]
 }
 
 export interface Track {
@@ -48,6 +62,7 @@ export const tracks: Track[] = [
           { label: 'MDN – HTML', url: 'https://developer.mozilla.org/en-US/docs/Web/HTML' },
           { label: 'web.dev – Learn HTML', url: 'https://web.dev/learn/html' },
         ],
+        exercises: htmlExercises,
       },
       {
         id: 'css',
@@ -66,6 +81,7 @@ export const tracks: Track[] = [
           { label: 'MDN – CSS', url: 'https://developer.mozilla.org/en-US/docs/Web/CSS' },
           { label: 'web.dev – Learn CSS', url: 'https://web.dev/learn/css' },
         ],
+        exercises: cssExercises,
       },
       {
         id: 'javascript',
@@ -84,6 +100,7 @@ export const tracks: Track[] = [
           { label: 'MDN – JavaScript', url: 'https://developer.mozilla.org/en-US/docs/Web/JavaScript' },
           { label: 'javascript.info', url: 'https://javascript.info/' },
         ],
+        exercises: javascriptExercises,
       },
       {
         id: 'typescript',
@@ -100,6 +117,7 @@ export const tracks: Track[] = [
         resources: [
           { label: 'TypeScript Handbook', url: 'https://www.typescriptlang.org/docs/handbook/intro.html' },
         ],
+        exercises: typescriptExercises,
       },
       {
         id: 'react',
@@ -117,6 +135,7 @@ export const tracks: Track[] = [
         resources: [
           { label: 'react.dev – Learn', url: 'https://react.dev/learn' },
         ],
+        exercises: reactExercises,
       },
       {
         id: 'state-management',
@@ -134,6 +153,7 @@ export const tracks: Track[] = [
           { label: 'react.dev – Managing State', url: 'https://react.dev/learn/managing-state' },
           { label: 'TanStack Query', url: 'https://tanstack.com/query/latest' },
         ],
+        exercises: stateManagementExercises,
       },
       {
         id: 'tooling',
@@ -151,6 +171,7 @@ export const tracks: Track[] = [
           { label: 'Vite Guide', url: 'https://vite.dev/guide/' },
           { label: 'npm Docs', url: 'https://docs.npmjs.com/' },
         ],
+        exercises: toolingExercises,
       },
       {
         id: 'testing',
@@ -168,6 +189,7 @@ export const tracks: Track[] = [
           { label: 'Testing Library', url: 'https://testing-library.com/' },
           { label: 'Playwright', url: 'https://playwright.dev/' },
         ],
+        exercises: testingExercises,
       },
       {
         id: 'accessibility',
@@ -185,6 +207,7 @@ export const tracks: Track[] = [
           { label: 'web.dev – Learn Accessibility', url: 'https://web.dev/learn/accessibility' },
           { label: 'WAI-ARIA Practices', url: 'https://www.w3.org/WAI/ARIA/apg/' },
         ],
+        exercises: accessibilityExercises,
       },
       {
         id: 'performance',
@@ -201,6 +224,7 @@ export const tracks: Track[] = [
         resources: [
           { label: 'web.dev – Performance', url: 'https://web.dev/learn/performance' },
         ],
+        exercises: performanceExercises,
       },
     ],
   },
