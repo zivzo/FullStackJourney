@@ -12,6 +12,7 @@ export interface CheckOutcome {
 export type FrameMessage =
   | { channel: typeof MESSAGE_CHANNEL; runId: string; type: 'console'; level: ConsoleLevel; text: string }
   | { channel: typeof MESSAGE_CHANNEL; runId: string; type: 'checks'; results: CheckOutcome[] }
+  | { channel: typeof MESSAGE_CHANNEL; runId: string; type: 'loaded' }
 
 export function isFrameMessage(data: unknown): data is FrameMessage {
   return (
@@ -77,6 +78,7 @@ function bridge(runId: string, channel: string) {
   window.addEventListener('unhandledrejection', (event) => {
     send({ type: 'console', level: 'error', text: `Unhandled promise rejection: ${format(event.reason)}` })
   })
+  window.addEventListener('load', () => send({ type: 'loaded' }))
   // Submitting a form would navigate the preview away, so log the data instead.
   window.addEventListener('submit', (event) => {
     if (event.defaultPrevented || !(event.target instanceof HTMLFormElement)) return

@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useId, useRef, useState, type KeyboardEvent } from 'react'
 import { buildDocument, isFrameMessage, type CheckOutcome, type ConsoleLevel } from '../playground/document'
 import { prepareCode, type Problem } from '../playground/prepare'
-import { saveDraft } from '../playground/storage'
+import { saveDraft, setRunning, wasInterrupted } from '../playground/storage'
 import type { Exercise, ExerciseFiles, FileName } from '../playground/types'
 import { CodeEditor } from './CodeEditor'
 import { InlineCode } from './InlineCode'
@@ -73,6 +73,8 @@ export function Playground({ exercise, storageKey, initialFiles, onComplete }: P
   const [logs, setLogs] = useState<LogEntry[]>([])
   const [checkFrame, setCheckFrame] = useState<Frame | null>(null)
   const [checkState, setCheckState] = useState<CheckState>({ status: 'idle' })
+  // Don't run code automatically if the last run never finished, or the page could freeze again.
+  const [paused, setPaused] = useState(() => wasInterrupted(storageKey))
 
   const previewRef = useRef<HTMLIFrameElement>(null)
   const checkRef = useRef<HTMLIFrameElement>(null)
@@ -84,12 +86,14 @@ export function Playground({ exercise, storageKey, initialFiles, onComplete }: P
 
   // Rebuild the live preview shortly after the learner stops typing.
   useEffect(() => {
+    if (paused) return
     let cancelled = false
     const timer = window.setTimeout(async () => {
       const prepared = await prepareCode(exercise, files)
       if (cancelled) return
       const runId = createRunId()
       previewRunId.current = runId
+      setRunning(storageKey, 'preview', true)
       setProblems(prepared.problems)
       setLogs([])
       setPreview({
@@ -108,7 +112,15 @@ export function Playground({ exercise, storageKey, initialFiles, onComplete }: P
       cancelled = true
       window.clearTimeout(timer)
     }
-  }, [exercise, files])
+  }, [exercise, files, paused, storageKey])
+
+  useEffect(
+    () => () => {
+      setRunning(storageKey, 'preview', false)
+      setRunning(storageKey, 'checks', false)
+    },
+    [storageKey],
+  )
 
   useEffect(() => {
     saveDraft(storageKey, sameFiles(files, exercise.starter) ? null : files)
@@ -119,6 +131,7 @@ export function Playground({ exercise, storageKey, initialFiles, onComplete }: P
       const pending = pendingCheck.current
       if (!pending) return
       pendingCheck.current = null
+      setRunning(storageKey, 'checks', false)
       window.clearTimeout(checkTimer.current)
       setCheckFrame(null)
 
@@ -134,7 +147,7 @@ export function Playground({ exercise, storageKey, initialFiles, onComplete }: P
       setCheckState({ status: 'done', results: all, files: pending.files })
       if (all.length > 0 && all.every((result) => result.passed)) onComplete()
     },
-    [typeChecked, onComplete],
+    [typeChecked, onComplete, storageKey],
   )
 
   useEffect(() => {
@@ -143,6 +156,12 @@ export function Playground({ exercise, storageKey, initialFiles, onComplete }: P
       if (!isFrameMessage(data)) return
 
       if (
+        data.type === 'loaded' &&
+        data.runId === previewRunId.current &&
+        event.source === previewRef.current?.contentWindow
+      ) {
+        setRunning(storageKey, 'preview', false)
+      } else if (
         data.type === 'console' &&
         data.runId === previewRunId.current &&
         event.source === previewRef.current?.contentWindow
@@ -165,7 +184,7 @@ export function Playground({ exercise, storageKey, initialFiles, onComplete }: P
     }
     window.addEventListener('message', onMessage)
     return () => window.removeEventListener('message', onMessage)
-  }, [exercise, finishChecks])
+  }, [exercise, finishChecks, storageKey])
 
   useEffect(() => () => window.clearTimeout(checkTimer.current), [])
 
@@ -174,6 +193,7 @@ export function Playground({ exercise, storageKey, initialFiles, onComplete }: P
     const snapshot = files
     const prepared = await prepareCode(exercise, snapshot)
     const runId = createRunId()
+    setRunning(storageKey, 'checks', true)
     pendingCheck.current = {
       runId,
       files: snapshot,
@@ -220,7 +240,7 @@ export function Playground({ exercise, storageKey, initialFiles, onComplete }: P
     tabRefs.current[fileNames[index]]?.focus()
   }
 
-  const updating = preview?.files !== files
+  const updating = !paused && preview?.files !== files
   const results = checkState.status === 'done' ? checkState.results : null
   const passedCount = results?.filter((result) => result.passed).length ?? 0
   const allPassed = results !== null && passedCount === results.length
@@ -284,6 +304,18 @@ export function Playground({ exercise, storageKey, initialFiles, onComplete }: P
         </div>
       </div>
 
+      {paused && (
+        <div className="playground-notice" role="alert">
+          <p>
+            The last run of this code did not finish — it may contain an infinite loop. The preview is
+            paused so you can fix the code first.
+          </p>
+          <button type="button" className="button button-primary" onClick={() => setPaused(false)}>
+            Run code
+          </button>
+        </div>
+      )}
+
       <div className="playground-body">
         <div
           className="editor-pane"
@@ -311,7 +343,7 @@ export function Playground({ exercise, storageKey, initialFiles, onComplete }: P
           ) : (
             consolePanel
           )}
-          {preview && (
+          {preview && !paused && (
             <iframe
               key={preview.runId}
               ref={previewRef}

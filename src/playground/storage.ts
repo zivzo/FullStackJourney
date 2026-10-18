@@ -2,6 +2,7 @@ import type { ExerciseFiles } from './types'
 
 const DRAFT_PREFIX = 'fsj:draft:'
 const DONE_PREFIX = 'fsj:done:'
+const RUNNING_PREFIX = 'fsj:running:'
 
 // Storage can be unavailable (private mode, disabled cookies); exercises still work without it.
 function read(key: string): string | null {
@@ -49,4 +50,19 @@ export function isCompleted(key: string): boolean {
 
 export function markCompleted(key: string): void {
   write(DONE_PREFIX + key, '1')
+}
+
+export type RunKind = 'preview' | 'checks'
+
+/**
+ * Records that code is running. If the page freezes (e.g. an infinite loop), the
+ * flag is never cleared, so the next visit can avoid running the same code again.
+ */
+export function setRunning(key: string, kind: RunKind, running: boolean): void {
+  write(`${RUNNING_PREFIX}${kind}:${key}`, running ? '1' : null)
+}
+
+/** True when a previous run of this exercise never finished. */
+export function wasInterrupted(key: string): boolean {
+  return read(`${RUNNING_PREFIX}preview:${key}`) === '1' || read(`${RUNNING_PREFIX}checks:${key}`) === '1'
 }
