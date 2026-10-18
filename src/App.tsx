@@ -1,35 +1,33 @@
-import { useState } from 'react'
-import heroImg from './assets/hero.png'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import './App.css'
+import { Navbar } from './components/Navbar'
+import { findTopic, findTrack } from './data/skills'
+import { useHashRoute } from './hooks/useHashRoute'
+import { HomePage } from './pages/HomePage'
+import { NotFoundPage } from './pages/NotFoundPage'
+import { TopicPage } from './pages/TopicPage'
+import { TrackPage } from './pages/TrackPage'
+
+function renderPage(segments: string[]) {
+  const [trackId, topicId, ...rest] = segments
+  if (!trackId) return <HomePage />
+
+  const track = findTrack(trackId)
+  if (!track || rest.length > 0) return <NotFoundPage />
+  if (!topicId) return <TrackPage track={track} />
+
+  const topic = findTopic(track, topicId)
+  return topic ? <TopicPage track={track} topic={topic} /> : <NotFoundPage />
+}
 
 function App() {
-  const [count, setCount] = useState(0)
+  const segments = useHashRoute()
 
   return (
     <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.tsx</code> and save to test zivzo<code>HMR</code>
-          </p>
-        </div>
-        <button
-          type="button"
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
-      <section id="spacer"></section>
+      <Navbar activeTrackId={segments[0]} />
+      <main>{renderPage(segments)}</main>
+      <footer className="footer">
+        <p>FullStackJourney — learning the full stack, one skill at a time.</p>
+      </footer>
     </>
   )
 }
