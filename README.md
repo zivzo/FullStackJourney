@@ -1,32 +1,38 @@
-# React + TypeScript + Vite
+# FullStackJourney
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+A navigable roadmap of the skills a full-stack developer needs, built with React, TypeScript and Vite.
 
-Currently, two official plugins are available:
+Skill areas:
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- 🎨 **Frontend** – HTML, CSS, JavaScript, TypeScript, React, state management, tooling, testing, accessibility and performance
+- ⚙️ **Backend** – coming soon
+- 🗄️ **Databases** – coming soon
+- 🚀 **DevOps** – coming soon
 
-## React Compiler
+Each area lists its topics in a suggested learning order; each topic has key concepts and learning resources.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Getting started
 
-## Expanding the Oxlint configuration
-
-If you are developing a production application, we recommend enabling type-aware lint rules by installing `oxlint-tsgolint` and editing `.oxlintrc.json`:
-
-```json
-{
-  "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["react", "typescript", "oxc"],
-  "options": {
-    "typeAware": true
-  },
-  "rules": {
-    "react/rules-of-hooks": "error",
-    "react/only-export-components": ["warn", { "allowConstantExport": true }]
-  }
-}
+```bash
+npm install
+npm run dev      # start the dev server
+npm run lint     # lint with oxlint
+npm run build    # type-check and build to dist/
+npm run deploy   # build and publish dist/ to GitHub Pages
 ```
 
-See the [Oxlint rules documentation](https://oxc.rs/docs/guide/usage/linter/rules) for the full list of rules and categories.
+## Project structure
+
+```
+src/
+  data/skills.ts         # skill areas, topics, concepts and resources
+  hooks/useHashRoute.ts  # tiny hash router (GitHub Pages friendly)
+  components/            # Navbar, Breadcrumbs
+  pages/                 # Home, Track, Topic and Not Found pages
+  App.tsx                # route -> page mapping
+  index.css              # global styles
+```
+
+## Adding content
+
+Edit `src/data/skills.ts`: add topics to an existing track, or fill in the `topics` of a planned track and set its `status` to `'active'`.
