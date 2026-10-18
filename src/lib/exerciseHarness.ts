@@ -38,6 +38,7 @@ function isDeepEqual(a: unknown, b: unknown): boolean {
     return false
   }
   if (Array.isArray(a) !== Array.isArray(b)) return false
+  if (Array.isArray(a) && a.length !== (b as unknown[]).length) return false
   if (Object.getPrototypeOf(a) !== Object.getPrototypeOf(b)) return false
 
   const keysA = Object.keys(a)

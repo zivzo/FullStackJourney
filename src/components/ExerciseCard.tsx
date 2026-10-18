@@ -35,20 +35,25 @@ export function ExerciseCard({ exercise, storageKey }: ExerciseCardProps) {
   const [running, setRunning] = useState(false)
   const [hintsShown, setHintsShown] = useState(0)
   const [showSolution, setShowSolution] = useState(false)
+  const codeRevision = useRef(0)
   const escapePressed = useRef(false)
   const baseId = storageKey.replace(/[^\w-]/g, '-')
   const editorId = `${baseId}-editor`
   const helpId = `${baseId}-help`
 
   const updateCode = (next: string) => {
+    codeRevision.current += 1
     setCode(next)
+    setResult(null)
     saveCode(storageKey, next, exercise.starterCode)
   }
 
   const run = async () => {
     if (running) return
+    const revision = codeRevision.current
     setRunning(true)
-    setResult(await runExercise(code, exercise.tests))
+    const nextResult = await runExercise(code, exercise.tests)
+    if (revision === codeRevision.current) setResult(nextResult)
     setRunning(false)
   }
 

@@ -95,7 +95,9 @@ export const backendTopics: Topic[] = [
 
             const [requestLine, ...headerLines] = head.split('\\r\\n')
             const [method, target] = requestLine.split(' ')
-            const [path, search = ''] = target.split('?')
+            const queryStart = target.indexOf('?')
+            const path = queryStart === -1 ? target : target.slice(0, queryStart)
+            const search = queryStart === -1 ? '' : target.slice(queryStart + 1)
             const query = Object.fromEntries(new URLSearchParams(search))
 
             const headers = {}
@@ -123,6 +125,13 @@ export const backendTopics: Topic[] = [
               const req = parseRequest('GET /search?q=node&page=2 HTTP/1.1\\r\\n\\r\\n')
               assertEqual(req.path, '/search')
               assertDeepEqual(req.query, { q: 'node', page: '2' })
+            `),
+          },
+          {
+            name: 'preserves question marks in query values',
+            code: dedent(`
+              const req = parseRequest('GET /search?q=what? HTTP/1.1\\r\\n\\r\\n')
+              assertDeepEqual(req.query, { q: 'what?' })
             `),
           },
           {
@@ -905,7 +914,8 @@ export const backendTopics: Topic[] = [
           function decodePart(part) {
             const base64 = part.replace(/-/g, '+').replace(/_/g, '/')
             const padded = base64 + '='.repeat((4 - (base64.length % 4)) % 4)
-            return JSON.parse(atob(padded))
+            const bytes = Uint8Array.from(atob(padded), (character) => character.charCodeAt(0))
+            return JSON.parse(new TextDecoder().decode(bytes))
           }
 
           function decodeJwt(token) {
@@ -938,6 +948,17 @@ export const backendTopics: Topic[] = [
             `),
           },
           {
+            name: 'decodes UTF-8 claims',
+            code: dedent(`
+              const encode = (value) => {
+                const bytes = new TextEncoder().encode(JSON.stringify(value))
+                return btoa(String.fromCharCode(...bytes)).replace(/=+$/, '')
+              }
+              const token = [encode({ alg: 'HS256' }), encode({ name: 'José' }), 'sig'].join('.')
+              assertEqual(decodeJwt(token).payload.name, 'José')
+            `),
+          },
+          {
             name: 'throws on malformed tokens',
             code: dedent(`
               assertThrows(() => decodeJwt('not-a-token'), 'one part')
@@ -962,14 +983,16 @@ export const backendTopics: Topic[] = [
         hints: [
           'Use `user?.roles ?? []` to handle missing users and roles.',
           '`roles.some(role => ...)` returns true as soon as one role grants access.',
-          'Unknown roles should not crash: `rolePermissions[role] ?? []`.',
+          'Use `Object.prototype.hasOwnProperty.call(rolePermissions, role)` so inherited property names are denied.',
         ],
         solution: dedent(`
           function createAuthorizer(rolePermissions) {
             return function can(user, permission) {
               const roles = user?.roles ?? []
               return roles.some((role) => {
-                const permissions = rolePermissions[role] ?? []
+                const permissions = Object.prototype.hasOwnProperty.call(rolePermissions, role)
+                  ? rolePermissions[role]
+                  : []
                 return permissions.includes('*') || permissions.includes(permission)
               })
             }
@@ -1013,6 +1036,7 @@ export const backendTopics: Topic[] = [
               assertEqual(can(null, 'posts:read'), false)
               assertEqual(can({}, 'posts:read'), false)
               assertEqual(can({ roles: ['ghost'] }, 'posts:read'), false)
+              assertEqual(can({ roles: ['constructor'] }, 'posts:read'), false)
             `),
           },
         ],
@@ -1401,7 +1425,7 @@ export const backendTopics: Topic[] = [
         starterCode: dedent(`
           class EventEmitter {
             constructor() {
-              this.listeners = {}
+              this.listeners = Object.create(null)
             }
 
             on(event, listener) {
@@ -1429,7 +1453,7 @@ export const backendTopics: Topic[] = [
         solution: dedent(`
           class EventEmitter {
             constructor() {
-              this.listeners = {}
+              this.listeners = Object.create(null)
             }
 
             on(event, listener) {
@@ -1508,6 +1532,11 @@ export const backendTopics: Topic[] = [
             code: dedent(`
               const emitter = new EventEmitter()
               assertEqual(emitter.emit('nothing'), false)
+              let called = false
+              emitter.on('constructor', () => { called = true })
+              assertEqual(emitter.emit('constructor'), true)
+              assertEqual(called, true)
+              assertEqual(emitter.emit('toString'), false)
               emitter.on('something', () => {})
               assertEqual(emitter.emit('something'), true)
             `),
