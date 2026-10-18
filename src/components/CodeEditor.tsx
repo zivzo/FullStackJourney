@@ -60,6 +60,18 @@ export function CodeEditor({ id, label, value, onChange }: CodeEditorProps) {
       return
     }
 
+    // Typing a closing bracket on an indented, otherwise empty line removes one indentation level.
+    if ((event.key === '}' || event.key === ']' || event.key === ')') && textarea.selectionStart === textarea.selectionEnd) {
+      const cursor = textarea.selectionStart
+      const lineStart = value.lastIndexOf('\n', cursor - 1) + 1
+      if (cursor - lineStart >= INDENT.length && /^ +$/.test(value.slice(lineStart, cursor))) {
+        event.preventDefault()
+        textarea.setSelectionRange(cursor - INDENT.length, cursor)
+        insertText(textarea, event.key, onChange)
+      }
+      return
+    }
+
     if (event.key === 'Enter' && !event.shiftKey) {
       const lineStart = value.lastIndexOf('\n', textarea.selectionStart - 1) + 1
       const indentation = value.slice(lineStart).match(/^[ \t]*/)?.[0] ?? ''
