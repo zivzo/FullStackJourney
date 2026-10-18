@@ -1,6 +1,7 @@
 import { Breadcrumbs } from '../components/Breadcrumbs'
 import { CodeExampleBlock } from '../components/CodeExampleBlock'
 import { ExerciseCard } from '../components/ExerciseCard'
+import { ExerciseList } from '../components/ExerciseList'
 import { href } from '../hooks/useHashRoute'
 import type { Topic, Track } from '../data/skills'
 
@@ -60,6 +61,10 @@ export function TopicPage({ track, topic }: TopicPageProps) {
             return <ExerciseCard key={storageKey} exercise={exercise} storageKey={storageKey} />
           })}
         </section>
+      )}
+
+      {topic.frontendExercises && topic.frontendExercises.length > 0 && (
+        <ExerciseList key={topic.id} topicId={topic.id} exercises={topic.frontendExercises} />
       )}
 
       <section className="panel">
