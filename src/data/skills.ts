@@ -1,8 +1,38 @@
+import { backendTopics } from './backend'
+
 export type Level = 'beginner' | 'intermediate' | 'advanced'
 
 export interface Resource {
   label: string
   url: string
+}
+
+export interface CodeExample {
+  title: string
+  /** Short label shown next to the title, e.g. "js" or "http". */
+  language: string
+  code: string
+  description?: string
+}
+
+export interface ExerciseTest {
+  name: string
+  /**
+   * JavaScript run after the learner's code. It can call the functions they
+   * wrote and use `assert`, `assertEqual`, `assertDeepEqual`, `assertThrows`
+   * and `assertRejects`. `await` is allowed.
+   */
+  code: string
+}
+
+export interface Exercise {
+  id: string
+  title: string
+  prompt: string
+  starterCode: string
+  solution: string
+  hints: string[]
+  tests: ExerciseTest[]
 }
 
 export interface Topic {
@@ -12,6 +42,8 @@ export interface Topic {
   level: Level
   concepts: string[]
   resources: Resource[]
+  examples?: CodeExample[]
+  exercises?: Exercise[]
 }
 
 export interface Track {
@@ -209,8 +241,8 @@ export const tracks: Track[] = [
     title: 'Backend',
     icon: '⚙️',
     description: 'Servers, APIs, authentication and business logic.',
-    status: 'planned',
-    topics: [],
+    status: 'active',
+    topics: backendTopics,
   },
   {
     id: 'databases',
