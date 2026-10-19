@@ -52,9 +52,20 @@ export function ExerciseCard({ exercise, storageKey }: ExerciseCardProps) {
     if (running) return
     const revision = codeRevision.current
     setRunning(true)
-    const nextResult = await runExercise(code, exercise.tests)
-    if (revision === codeRevision.current) setResult(nextResult)
-    setRunning(false)
+    try {
+      const nextResult = await runExercise(code, exercise.tests)
+      if (revision === codeRevision.current) setResult(nextResult)
+    } catch (error) {
+      if (revision === codeRevision.current) {
+        setResult({
+          results: [],
+          logs: [],
+          error: error instanceof Error ? `${error.name}: ${error.message}` : String(error),
+        })
+      }
+    } finally {
+      setRunning(false)
+    }
   }
 
   const reset = () => {
