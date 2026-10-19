@@ -28,6 +28,14 @@ export function TrackPage({ track }: { track: Track }) {
                 <div>
                   <h2>{topic.title}</h2>
                   <p>{topic.summary}</p>
+                  {(topic.exercises?.length ?? 0) + (topic.frontendExercises?.length ?? 0) > 0 && (
+                    <p className="topic-meta">
+                      🧪 {(topic.exercises?.length ?? 0) + (topic.frontendExercises?.length ?? 0)} live{' '}
+                      {(topic.exercises?.length ?? 0) + (topic.frontendExercises?.length ?? 0) === 1
+                        ? 'exercise'
+                        : 'exercises'}
+                    </p>
+                  )}
                 </div>
                 <span className={`badge badge-${topic.level}`}>{topic.level}</span>
               </a>

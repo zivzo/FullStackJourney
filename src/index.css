@@ -10,6 +10,8 @@
 
   --code-bg: #f3f4f6;
   --code-text: #1f2937;
+  --pass: #047857;
+  --fail: #dc2626;
 
   --sans: system-ui, 'Segoe UI', Roboto, sans-serif;
   --mono: ui-monospace, 'Cascadia Code', Menlo, Consolas, monospace;
@@ -33,6 +35,8 @@
     --shadow: rgba(0, 0, 0, 0.4) 0 8px 20px -6px;
     --code-bg: #0d0e13;
     --code-text: #e5e7eb;
+    --pass: #34d399;
+    --fail: #f87171;
   }
 }
 
@@ -632,6 +636,150 @@ code {
   overflow: hidden;
   clip-path: inset(50%);
   white-space: nowrap;
+}
+
+/* Backend examples and exercises */
+.topic-meta {
+  margin-top: 4px;
+  font-size: 14px;
+}
+
+.code-example + .code-example {
+  margin-top: 24px;
+}
+
+.code-example {
+  margin: 16px 0 0;
+}
+
+.code-example figcaption {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+h3,
+h4 {
+  margin: 0;
+  color: var(--text-h);
+}
+
+h3 {
+  font-size: 17px;
+}
+
+h4 {
+  font-size: 15px;
+  margin: 16px 0 6px;
+}
+
+.code-example p {
+  margin-bottom: 8px;
+}
+
+.code-lang {
+  padding: 1px 8px;
+  border-radius: 6px;
+  font: 12px var(--mono);
+  background: var(--accent-bg);
+  color: var(--accent);
+}
+
+.code-block {
+  margin: 0;
+  padding: 14px 16px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--code-bg);
+  color: var(--code-text);
+  font: 14px/1.55 var(--mono);
+  tab-size: 2;
+  overflow-x: auto;
+}
+
+.code-block code {
+  padding: 0;
+  background: none;
+  color: inherit;
+  font-size: inherit;
+}
+
+.code-editor {
+  white-space: pre;
+}
+
+.editor-help {
+  margin-top: 6px;
+  font-size: 13px;
+}
+
+.exercise-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.hints ol,
+ol.hints {
+  margin-top: 12px;
+}
+
+ol.hints li {
+  padding: 8px 12px;
+  border-radius: 8px;
+  background: var(--accent-bg);
+}
+
+ol.hints li + li {
+  margin-top: 6px;
+}
+
+.results {
+  margin-top: 16px;
+}
+
+.result-summary,
+.result-error {
+  margin-bottom: 8px;
+  font-weight: 700;
+}
+
+.result-summary.pass,
+.test-results .pass {
+  color: var(--pass);
+}
+
+.result-summary.fail,
+.result-error,
+.test-results .fail {
+  color: var(--fail);
+}
+
+.test-results li {
+  padding: 4px 0;
+}
+
+.test-message {
+  margin: 2px 0 0 22px;
+  color: var(--text);
+  font: 13px var(--mono);
+  white-space: pre-wrap;
+}
+
+.console-output {
+  max-height: 240px;
+  overflow: auto;
+}
+
+.solution {
+  margin-top: 8px;
+}
+
+.badge-solved {
+  background: rgba(16, 185, 129, 0.15);
+  color: var(--pass);
 }
 
 /* Footer */

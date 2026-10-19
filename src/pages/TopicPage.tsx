@@ -1,4 +1,6 @@
 import { Breadcrumbs } from '../components/Breadcrumbs'
+import { CodeExampleBlock } from '../components/CodeExampleBlock'
+import { ExerciseCard } from '../components/ExerciseCard'
 import { ExerciseList } from '../components/ExerciseList'
 import { href } from '../hooks/useHashRoute'
 import type { Topic, Track } from '../data/skills'
@@ -38,6 +40,33 @@ export function TopicPage({ track, topic }: TopicPageProps) {
         </ul>
       </section>
 
+      {topic.examples && topic.examples.length > 0 && (
+        <section className="panel">
+          <h2>Examples</h2>
+          {topic.examples.map((example) => (
+            <CodeExampleBlock key={example.title} example={example} />
+          ))}
+        </section>
+      )}
+
+      {topic.exercises && topic.exercises.length > 0 && (
+        <section className="panel">
+          <h2>Practice</h2>
+          <p className="panel-intro">
+            Write JavaScript in the editor and run the tests. Your code runs in a sandboxed worker
+            right here in the browser.
+          </p>
+          {topic.exercises.map((exercise) => {
+            const storageKey = `fullstackjourney:exercise:${track.id}/${topic.id}/${exercise.id}`
+            return <ExerciseCard key={storageKey} exercise={exercise} storageKey={storageKey} />
+          })}
+        </section>
+      )}
+
+      {topic.frontendExercises && topic.frontendExercises.length > 0 && (
+        <ExerciseList key={topic.id} topicId={topic.id} exercises={topic.frontendExercises} />
+      )}
+
       <section className="panel">
         <h2>Resources</h2>
         <ul className="resources">
@@ -50,10 +79,6 @@ export function TopicPage({ track, topic }: TopicPageProps) {
           ))}
         </ul>
       </section>
-
-      {topic.exercises && topic.exercises.length > 0 && (
-        <ExerciseList key={topic.id} topicId={topic.id} exercises={topic.exercises} />
-      )}
 
       <nav className="pager" aria-label="Topic navigation">
         {previous ? (

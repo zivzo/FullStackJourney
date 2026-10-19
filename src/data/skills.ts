@@ -1,4 +1,5 @@
-import type { Exercise } from '../playground/types'
+import { backendTopics } from './backend'
+import type { Exercise as PlaygroundExercise } from '../playground/types'
 import { accessibilityExercises } from './exercises/accessibility'
 import { cssExercises } from './exercises/css'
 import { htmlExercises } from './exercises/html'
@@ -17,6 +18,34 @@ export interface Resource {
   url: string
 }
 
+export interface CodeExample {
+  title: string
+  /** Short label shown next to the title, e.g. "js" or "http". */
+  language: string
+  code: string
+  description?: string
+}
+
+export interface ExerciseTest {
+  name: string
+  /**
+   * JavaScript run after the learner's code. It can call the functions they
+   * wrote and use `assert`, `assertEqual`, `assertDeepEqual`, `assertThrows`
+   * and `assertRejects`. `await` is allowed.
+   */
+  code: string
+}
+
+export interface Exercise {
+  id: string
+  title: string
+  prompt: string
+  starterCode: string
+  solution: string
+  hints: string[]
+  tests: ExerciseTest[]
+}
+
 export interface Topic {
   id: string
   title: string
@@ -24,8 +53,9 @@ export interface Topic {
   level: Level
   concepts: string[]
   resources: Resource[]
-  /** Hands-on coding exercises with a live preview. */
+  examples?: CodeExample[]
   exercises?: Exercise[]
+  frontendExercises?: PlaygroundExercise[]
 }
 
 export interface Track {
@@ -62,7 +92,7 @@ export const tracks: Track[] = [
           { label: 'MDN – HTML', url: 'https://developer.mozilla.org/en-US/docs/Web/HTML' },
           { label: 'web.dev – Learn HTML', url: 'https://web.dev/learn/html' },
         ],
-        exercises: htmlExercises,
+        frontendExercises: htmlExercises,
       },
       {
         id: 'css',
@@ -81,7 +111,7 @@ export const tracks: Track[] = [
           { label: 'MDN – CSS', url: 'https://developer.mozilla.org/en-US/docs/Web/CSS' },
           { label: 'web.dev – Learn CSS', url: 'https://web.dev/learn/css' },
         ],
-        exercises: cssExercises,
+        frontendExercises: cssExercises,
       },
       {
         id: 'javascript',
@@ -100,7 +130,7 @@ export const tracks: Track[] = [
           { label: 'MDN – JavaScript', url: 'https://developer.mozilla.org/en-US/docs/Web/JavaScript' },
           { label: 'javascript.info', url: 'https://javascript.info/' },
         ],
-        exercises: javascriptExercises,
+        frontendExercises: javascriptExercises,
       },
       {
         id: 'typescript',
@@ -117,7 +147,7 @@ export const tracks: Track[] = [
         resources: [
           { label: 'TypeScript Handbook', url: 'https://www.typescriptlang.org/docs/handbook/intro.html' },
         ],
-        exercises: typescriptExercises,
+        frontendExercises: typescriptExercises,
       },
       {
         id: 'react',
@@ -135,7 +165,7 @@ export const tracks: Track[] = [
         resources: [
           { label: 'react.dev – Learn', url: 'https://react.dev/learn' },
         ],
-        exercises: reactExercises,
+        frontendExercises: reactExercises,
       },
       {
         id: 'state-management',
@@ -153,7 +183,7 @@ export const tracks: Track[] = [
           { label: 'react.dev – Managing State', url: 'https://react.dev/learn/managing-state' },
           { label: 'TanStack Query', url: 'https://tanstack.com/query/latest' },
         ],
-        exercises: stateManagementExercises,
+        frontendExercises: stateManagementExercises,
       },
       {
         id: 'tooling',
@@ -171,7 +201,7 @@ export const tracks: Track[] = [
           { label: 'Vite Guide', url: 'https://vite.dev/guide/' },
           { label: 'npm Docs', url: 'https://docs.npmjs.com/' },
         ],
-        exercises: toolingExercises,
+        frontendExercises: toolingExercises,
       },
       {
         id: 'testing',
@@ -189,7 +219,7 @@ export const tracks: Track[] = [
           { label: 'Testing Library', url: 'https://testing-library.com/' },
           { label: 'Playwright', url: 'https://playwright.dev/' },
         ],
-        exercises: testingExercises,
+        frontendExercises: testingExercises,
       },
       {
         id: 'accessibility',
@@ -207,7 +237,7 @@ export const tracks: Track[] = [
           { label: 'web.dev – Learn Accessibility', url: 'https://web.dev/learn/accessibility' },
           { label: 'WAI-ARIA Practices', url: 'https://www.w3.org/WAI/ARIA/apg/' },
         ],
-        exercises: accessibilityExercises,
+        frontendExercises: accessibilityExercises,
       },
       {
         id: 'performance',
@@ -224,7 +254,7 @@ export const tracks: Track[] = [
         resources: [
           { label: 'web.dev – Performance', url: 'https://web.dev/learn/performance' },
         ],
-        exercises: performanceExercises,
+        frontendExercises: performanceExercises,
       },
     ],
   },
@@ -233,8 +263,8 @@ export const tracks: Track[] = [
     title: 'Backend',
     icon: '⚙️',
     description: 'Servers, APIs, authentication and business logic.',
-    status: 'planned',
-    topics: [],
+    status: 'active',
+    topics: backendTopics,
   },
   {
     id: 'databases',
